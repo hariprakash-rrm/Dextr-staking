@@ -1,0 +1,144 @@
+
+
+<div *ngIf="poolDetails?.length > 0" class="container max-w-screen-xl mx-auto p-4">
+  <div class="flex justify-center">
+  <button *ngIf="!isLoading" (click)="claimTestToken()" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Get test deposit Token</button>
+  <button
+  *ngIf="isLoading"
+  class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+>
+  Loading . . .
+</button>
+  </div>
+</div>
+<div class="container max-w-screen-xl mx-auto p-4">
+  <div *ngIf="poolDetails?.length == 0">
+    <p class="flex justify-center text-white">
+      Double-check your connection to the BSC Testnet.
+    </p>
+    <p class="flex justify-center text-white">
+      If everything is set, hang tight, your data is on the way!
+    </p>
+  </div>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div
+      *ngFor="let item of poolDetails; let i = index"
+      class="bg-gray-200 border border-gray-200 rounded-lg shadow-md"
+    >
+      <div class="p-6 space-y-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <p>Pool - #{{ i + 1 }}</p>
+          
+        </div>
+        <div>
+          <p>Start Time {{ item?.startTime | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+         
+        </div>
+        <div>
+          <p>End Time - {{ item?.endTime | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+        </div>
+        
+
+        <div>
+          <p class="text-gray-600">Deposit Token:</p>
+          <div class="break-all">
+            {{ item?.depositToken }}
+            
+          </div>
+          <div>Balance - {{item?.balance}}</div>
+        </div>
+        <div>
+          <p class="text-gray-600">Reward Token:</p>
+          <div class="break-all">
+            {{ item?.rewardToken }}
+          </div>
+          <div>Balance - {{item?.rewardBalance}}</div>
+        </div>
+
+        <p class="text-gray-600">Reward Rate: {{ item?.rewardRate }}%</p>
+        <p class="text-gray-600">
+          Reward interval : Can claim after {{ item?.rewardInterval }} seconds
+        </p>
+
+        <!-- Placeholder for other details -->
+        <p class="text-gray-600">
+          Current Staked Amount: {{ item?.userStakedAmout }}
+        </p>
+        
+        <p class="text-gray-600">
+          Current Reward: {{ item?.userCalculatedReward }}
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <button
+            *ngIf="!isLoading && item.isStake"
+            (click)="stakeModal(i)"
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+          >
+            Claim & Stake More
+          </button>
+          <button
+            *ngIf="!isLoading && !item.isStake"
+            (click)="stakeModal(i)"
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+          >
+            <p *ngIf="item?.isStarted && !item?.isCompleted">Stake Now</p>
+            <p *ngIf="item?.isCompleted">Pool Ended</p>
+            <p *ngIf="!item?.isStarted && !item?.isCompleted">Not yet start</p>
+          </button>
+          <button
+            *ngIf="!isLoading && item.isStake"
+            (click)="claim(i)"
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+          >
+            Claim Reward
+          </button>
+          <button
+            *ngIf="!isLoading && item.isStake"
+            (click)="unStake(i)"
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+          >
+            Unstake
+          </button>
+          <button
+            *ngIf="isLoading"
+            class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+          >
+            Loading . . .
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showModal" class="modal-bg">
+  <div class="modal-content">
+    <button class="bg-gray-200" (click)="toggleModal()">Close</button>
+    <div class="modal-body">
+      <p>Stake on pool # {{ currentPoolId }}</p>
+      <p>PreApproveAmount - {{ preApprovedAmount }}</p>
+      <input
+        [(ngModel)]="depositAmount"
+        (ngModelChange)="logChange($event)"
+        type="number"
+        placeholder="Enter amount to Stake"
+        class="form-control"
+      />
+      <button
+        *ngIf="isLoading"
+        class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+      >
+        Loading . . .
+      </button>
+      <button
+        *ngIf="!isLoading"
+        (click)="stakeNow()"
+        class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
+      >
+        {{ approveOrStake }}
+      </button>
+    </div>
+  </div>
+</div>
